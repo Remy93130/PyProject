@@ -4,8 +4,8 @@ information needed by the user.
 """
 
 
+# import re
 import pandas as pd
-import re
 
 
 class DataService:
