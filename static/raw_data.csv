@@ -1,4 +1,4 @@
-"Country","Year","Number of deaths due to tuberculosis, excluding HIV","Deaths due to tuberculosis among HIV-negative people (per 100 000 population)"
+"Country","Year","Deaths","Deaths_per_100_000_population"
 "Afghanistan"," 2017","10000 [6000-15000]","29 [17-43]"
 "Afghanistan"," 2016","11000 [6700-17000]","33 [19-49]"
 "Afghanistan"," 2015","13000 [7700-20000]","39 [23-58]"
