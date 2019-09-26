@@ -16,7 +16,7 @@ app = Flask(__name__)
 def hello_world():
     """A beautiful hello world to test
     the program because you can't bypass it"""
-    return jsonify({"message": "Hello World!"})
+    return jsonify({"message": "OK", "status": 200})
 
 
 @app.route('/country/<string:country>')
@@ -43,6 +43,9 @@ def test_region_info(region):
 
 @app.route('/data')
 def test_data():
+    """ Function to display data in the csv file
+    :return: html tab of the data
+    """
     service = DataService(os.getcwd() + "/static/raw_data.csv")
     return service.get_data_frame().to_html()
 

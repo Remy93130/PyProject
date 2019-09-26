@@ -29,16 +29,19 @@ class CountryInfoService:
         """
         headers = {"content-type": "application/json"}
         response = requests.get(url, headers=headers)
-        return json.dumps(response.text)
+        return json.loads(response.text)
 
     def get_information_by_name(self, country):
         """ Method to obtain data according the country
         given in argument
         :param country: The country selected
-        :return: dict
+        :return: dict or None if the response got 404
         """
         url = self.api_url + "name/" + country
-        return self.__do_request(url)
+        data = self.__do_request(url)
+        if 'status' in data and data['status'] == 404:
+            return None
+        return data[0]
 
     def get_information_by_region(self, region):
         """ Method to obtain data according the region
