@@ -44,7 +44,7 @@ def test_region_info(region):
 @app.route('/data')
 def test_data():
     service = DataService(os.getcwd() + "/static/raw_data.csv")
-    return service.get_data_frame().to_string()
+    return service.get_data_frame().to_html()
 
 
 if __name__ == '__main__':
