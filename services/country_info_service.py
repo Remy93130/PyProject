@@ -36,7 +36,7 @@ class CountryInfoService:
         :param country: The country selected
         :return: dict or None if the response got 404
         """
-        url = self.api_url + "name/" + country
+        url = self.api_url + "name/" + country + "?fullText=true"
         data = self.__do_request(url)
         if 'status' in data and data['status'] == 404:
             return None
@@ -65,6 +65,7 @@ class CountryInfoService:
             frame = row[1]
             if frame.Country not in cached_data:
                 cached_data[frame.Country] = self.get_information_by_name(frame.Country)
+                print(cached_data[frame.Country])
             rows_to_insert["Code"].append(cached_data[frame.Country]["alpha3Code"])
             rows_to_insert["Capital"].append(cached_data[frame.Country]["capital"])
             rows_to_insert["Population"].append(cached_data[frame.Country]["population"])

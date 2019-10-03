@@ -66,7 +66,7 @@ class DataService:
             formatted_data[country_name][value[1]] = (int(value[2]), int(value[3]))
         return formatted_data
 
-    def get_data_for_visualisation(self, countries, dates=None):
+    def get_data_for_visualisation(self, countries=None, dates=None):
         """ Prepare the data for visualisation.
         Return a pandas data frames filtered by the list of
         countries and dates passed in arguments. If the
@@ -81,7 +81,10 @@ class DataService:
         (3, 4)
         >>> service.get_data_for_visualisation(["Afghanistan"], [2040])
         """
-        country_data = self.data_frame[self.data_frame.Country.isin(countries)]
+        if countries:
+            country_data = self.data_frame[self.data_frame.Country.isin(countries)]
+        else:
+            country_data = self.data_frame
         if dates:
             country_data = country_data[country_data.Year.isin(dates)]
         return country_data if not country_data.empty else None
