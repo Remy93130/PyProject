@@ -126,3 +126,4 @@ dmypy.json
 # Custom files
 .idea/
 tests/
+data_visualisation/

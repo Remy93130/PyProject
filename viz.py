@@ -15,7 +15,7 @@ df = info.complete_data_frame(df)
 
 fig = go.Figure(data=go.Choropleth(
     locations=df['Code'],
-    z=df['Deaths'],
+    z=df['Deaths_per_100_000_population'],
     text=df['Country'],
     colorscale='hot',
     autocolorscale=False,
@@ -35,4 +35,4 @@ fig.update_layout(
 )
 
 # fig.show()
-ply.plot(fig, filename="result.html")
+ply.plot(fig, filename="result_100.html")
