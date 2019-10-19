@@ -14,7 +14,6 @@ class DataService:
     >>> service.get_data_by_country("Afghanistan", 2017)
     {'Afghanistan': {2017: (10000, 29)}}
     >>> service.get_data_by_country("Nambia")
-
     >>> service.get_data_by_country("Afghanistan")
     {'Afghanistan': {2017: (10000, 29), 2016: (11000, 33), \
 2015: (13000, 39), 2014: (14000, 42), 2013: (14000, 43), 2012: (13000, 44), \
@@ -22,7 +21,6 @@ class DataService:
 2007: (10000, 38), 2006: (11000, 42), 2005: (12000, 46), 2004: (12000, 51), \
 2003: (13000, 57), 2002: (12000, 56), 2001: (13000, 62), 2000: (14000, 67)}}
     >>> service.get_data_by_country("Afghanistan", 3030)
-
     """
 
     def __init__(self, data_file):
