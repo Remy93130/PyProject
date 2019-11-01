@@ -6,7 +6,8 @@ the user request
 
 import os
 import pathlib
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, request
+from flask_cors import cross_origin
 from services.country_info_service import CountryInfoService
 from services.data_service import DataService
 from services.visualisation_service import VisualisationService
@@ -55,6 +56,7 @@ def test_data():
 
 
 @app.route('/map/<int:date>')
+@cross_origin()
 def test_world_map(date):
     """ Function to create a map to the given argument
     Check if the map is not already created else created it
@@ -74,11 +76,11 @@ def test_world_map(date):
             "number of deaths per 100,000 inhabitants in {}".format(date),
             file
         )
-    response = dict(path=str(path).replace("\\", "/"))
+    response = dict(path=(request.host_url + str(path).replace("\\", "/")))
     return jsonify(response)
 
 
-@app.route('/resource/<string:path>')
+@app.route('/resources/<string:path>')
 def send_map_file(path):
     """ Route to get maps
     :param path: The html file
@@ -88,4 +90,4 @@ def send_map_file(path):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
