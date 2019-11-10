@@ -64,7 +64,7 @@ class DataService:
             formatted_data[country_name][value[1]] = (int(value[2]), int(value[3]))
         return formatted_data
 
-    def get_data_for_visualisation(self, countries=None, dates=None):
+    def prepare_data_for_map_visualisation(self, countries=None, dates=None):
         """ Prepare the data for visualisation.
         Return a pandas data frames filtered by the list of
         countries and dates passed in arguments. If the
@@ -73,11 +73,11 @@ class DataService:
         :param dates: The list of dates to select
         :return: Pandas data frame or None
         >>> service = DataService('../static/raw_data.csv')
-        >>> service.get_data_for_visualisation(["Afghanistan"], [2010, 2011]).shape
+        >>> service.prepare_data_for_map_visualisation(["Afghanistan"], [2010, 2011]).shape
         (2, 4)
-        >>> service.get_data_for_visualisation(["Afghanistan"], [2010, 2011, 2012]).shape
+        >>> service.prepare_data_for_map_visualisation(["Afghanistan"], [2010, 2011, 2012]).shape
         (3, 4)
-        >>> service.get_data_for_visualisation(["Afghanistan"], [2040])
+        >>> service.prepare_data_for_map_visualisation(["Afghanistan"], [2040])
         """
         if countries:
             country_data = self.data_frame[self.data_frame.Country.isin(countries)]
@@ -86,6 +86,36 @@ class DataService:
         if dates:
             country_data = country_data[country_data.Year.isin(dates)]
         return country_data if not country_data.empty else None
+
+    def prepare_data_for_death_chart(self, countries):
+        """ Create a dict with key countries selected
+        and for value the list of death over years
+        :param countries: The list of countries to select
+        :return: dict
+        >>> service = DataService('../static/raw_data.csv')
+        >>> service.prepare_data_for_death_chart(["France"])
+        {'France': \
+[1200, 1100, 1000, 1000, 880, 910, 780, 720, 690, 680, 650, 640, 550, 560, 480, 450, 400, 350]}
+        >>> service.prepare_data_for_death_chart(["France", "Canada"])
+        {'Canada': \
+[140, 150, 150, 130, 100, 130, 130, 130, 130, 85, 91, 99, 95, 110, 110, 110, 110, 110], 'France': \
+[1200, 1100, 1000, 1000, 880, 910, 780, 720, 690, 680, 650, 640, 550, 560, 480, 450, 400, 350]}
+        """
+        raw_data = dict()
+        for row in self.data_frame.iterrows():
+            if row[1].Country not in countries:
+                continue
+            if row[1].Country not in raw_data:
+                raw_data[row[1].Country] = list()
+            raw_data[row[1].Country].append((row[1].Year, int(row[1].Deaths)))
+        data = dict()
+        for key, value in raw_data.items():
+            value.sort()
+            temp_list = list()
+            for date in value:
+                temp_list.append(date[1])
+            data[key] = temp_list[:]
+        return data
 
 
 if __name__ == '__main__':

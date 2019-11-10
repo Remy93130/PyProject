@@ -7,6 +7,9 @@ import plotly.graph_objects as go
 import plotly.offline as ply
 
 
+DATES = [i for i in range(2000, 2018)]
+
+
 class VisualisationService:
     """ Class to provide data visualisation.
     Use the data frame given in constructor
@@ -44,3 +47,4 @@ class VisualisationService:
             )
         )
         ply.plot(figure, auto_open=False, filename=path)
+
