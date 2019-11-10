@@ -25,8 +25,8 @@ def hello_world():
 
 
 @app.route('/country/<string:country>')
-def test_country_info(country):
-    """ Function to test the country API
+def get_country_info(country):
+    """ Function to get the country API
     :param country: Country to get information
     :return: JSON data about country
     """
@@ -36,8 +36,8 @@ def test_country_info(country):
 
 
 @app.route('/region/<string:region>')
-def test_region_info(region):
-    """ Function to test the country API
+def get_region_info(region):
+    """ Function to get the country API
     :param region: Region to get information
     :return: JSON data about region:
     """
@@ -47,7 +47,7 @@ def test_region_info(region):
 
 
 @app.route('/data')
-def test_data():
+def get_data():
     """ Function to display data in the csv file
     :return: html tab of the data
     """
@@ -57,7 +57,7 @@ def test_data():
 
 @app.route('/map/<int:date>')
 @cross_origin()
-def test_world_map(date):
+def get_world_map(date):
     """ Function to create a map to the given argument
     Check if the map is not already created else created it
     and return the path to see it
@@ -68,7 +68,9 @@ def test_world_map(date):
     if not path.exists():
         data_service = DataService(CSV_PATH)
         country_service = CountryInfoService()
-        data_frame = data_service.get_data_for_visualisation(dates=[date])
+        data_frame = data_service.prepare_data_for_map_visualisation(dates=[date])
+        if not data_frame:
+            return jsonify(None)
         data_frame = country_service.complete_data_frame(data_frame)
         visualisation = VisualisationService(data_frame)
         file = "./resources/map_{}.html".format(date)
@@ -78,6 +80,11 @@ def test_world_map(date):
         )
     response = dict(path=(request.host_url + str(path).replace("\\", "/")))
     return jsonify(response)
+
+
+@app.route('/test/chart')
+def test_data():
+    pass
 
 
 @app.route('/resources/<string:path>')
