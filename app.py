@@ -64,7 +64,7 @@ def get_world_map(date):
     :param date: The date to visualise data
     :return: JSON data with the relative path
     """
-    path = pathlib.Path('resources/map_{}.html'.format(date))
+    path = pathlib.Path('resources/maps/map_{}.html'.format(date))
     if not path.exists():
         data_service = DataService(CSV_PATH)
         country_service = CountryInfoService()
@@ -87,13 +87,13 @@ def test_data():
     pass
 
 
-@app.route('/resources/<string:path>')
+@app.route('/resources/maps/<string:path>')
 def send_map_file(path):
     """ Route to get maps
     :param path: The html file
     :return: The html file
     """
-    return send_from_directory("resources", path)
+    return send_from_directory("resources/maps", path)
 
 
 if __name__ == '__main__':
