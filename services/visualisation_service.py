@@ -48,3 +48,29 @@ class VisualisationService:
         )
         ply.plot(figure, auto_open=False, filename=path)
 
+    def draw_bar_char(self, title, x_legend, y_legend, path=""):
+        """ Use the data in the object to build a bar chart
+        :param title: The chart's title
+        :param x_legend: The legend for the X axis
+        :param y_legend: The legend for the Y axis
+        :param path: The path to save the file
+        """
+        data = list()
+        for country, value in self.data.items():
+            data.append(go.Bar(name=country, x=DATES, y=value))
+        figure = go.Figure(data=data)
+        figure.update_layout(
+            barmode="group",
+            title_text=title,
+            xaxis=dict(
+                title=x_legend,
+                titlefont_size=16,
+                tickfont_size=14
+            ),
+            yaxis=dict(
+                title=y_legend,
+                titlefont_size=16,
+                tickfont_size=14
+            )
+        )
+        ply.plot(figure, auto_open=False, filename=path)

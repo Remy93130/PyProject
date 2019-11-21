@@ -73,18 +73,55 @@ def get_world_map(date):
             return jsonify(None)
         data_frame = country_service.complete_data_frame(data_frame)
         visualisation = VisualisationService(data_frame)
-        file = "./resources/map_{}.html".format(date)
+        file = "./resources/maps/map_{}.html".format(date)
         visualisation.draw_world_map(
-            "number of deaths per 100,000 inhabitants in {}".format(date),
+            "Number of deaths per 100,000 inhabitants in {}".format(date),
             file
         )
     response = dict(path=(request.host_url + str(path).replace("\\", "/")))
     return jsonify(response)
 
 
-@app.route('/test/chart')
-def test_data():
-    pass
+@app.route('/charts')
+def get_charts():
+    """ Just a route to test the bar charts
+    :return: JSON data with the relative path
+    """
+    data_service = DataService(CSV_PATH)
+    countries = request.args.get('countries', default="", type=str)
+    countries = countries.split(',')
+    countries.sort()
+    safe_countries = data_service.get_country_available()
+    for country in countries:
+        if country not in safe_countries:
+            countries.remove(country)
+    if not countries:
+        return jsonify(None)
+    filename = "".join(countries)
+    path = pathlib.Path('resources/bars/{}_d.html'.format(filename))
+    if not path.exists():
+        data = data_service.prepare_data_for_death_chart(countries)
+        visualisation = VisualisationService(data)
+        file = "./resources/bars/{}".format(filename)
+        visualisation.draw_bar_char(
+            "Number of deaths over years",
+            "Dates",
+            "Number of deaths",
+            "{}_d.html".format(file)
+        )
+        DataService.create_cumulative_chart(data)
+        visualisation.draw_bar_char(
+            "Number of deaths over years (cumulative)",
+            "Dates",
+            "Number of deaths (cumulative)",
+            "{}_c.html".format(file)
+        )
+    paths = dict(
+        death=(request.host_url + str(path).replace("\\", "/")),
+        cumulative=(request.host_url + str(path).replace("\\", "/").replace('_d', '_c'))
+    )
+    response = dict(paths=paths)
+    return jsonify(response)
 
 
 @app.route('/resources/maps/<string:path>')
@@ -94,6 +131,26 @@ def send_map_file(path):
     :return: The html file
     """
     return send_from_directory("resources/maps", path)
+
+
+@app.route('/resources/bars/<string:path>')
+def send_bar_file(path):
+    """ Route to get bars chart
+    :param path: The html file
+    :return: The html file
+    """
+    return send_from_directory("resources/bars", path)
+
+
+@app.route('/countries')
+def get_countries():
+    """ Route to return countries whose we have
+    data to display information about
+    :return: JSON data with all countries
+    """
+    data_service = DataService(CSV_PATH)
+    data = data_service.get_country_available()
+    return jsonify(list(data))
 
 
 if __name__ == '__main__':

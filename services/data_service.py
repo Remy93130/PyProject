@@ -64,6 +64,13 @@ class DataService:
             formatted_data[country_name][value[1]] = (int(value[2]), int(value[3]))
         return formatted_data
 
+    def get_country_available(self):
+        """ Get a set with all countries whose we can
+        obtain stat from them
+        :return: set
+        """
+        return {row[1].Country for row in self.data_frame.iterrows()}
+
     def prepare_data_for_map_visualisation(self, countries=None, dates=None):
         """ Prepare the data for visualisation.
         Return a pandas data frames filtered by the list of
@@ -90,6 +97,7 @@ class DataService:
     def prepare_data_for_death_chart(self, countries):
         """ Create a dict with key countries selected
         and for value the list of death over years
+        :param cumulative: If the chart must be a cumulative chart
         :param countries: The list of countries to select
         :return: dict
         >>> service = DataService('../static/raw_data.csv')
@@ -115,6 +123,22 @@ class DataService:
             for date in value:
                 temp_list.append(date[1])
             data[key] = temp_list[:]
+        return data
+
+    @staticmethod
+    def create_cumulative_chart(data):
+        """ Convert data given in arguments into a cumulative data
+        for display a bar chart with cumulative data
+        :param data: The data to convert
+        :return: data converted
+        """
+        for country, death in data.items():
+            cumulative_death = list()
+            amount = 0
+            for number in death:
+                cumulative_death.append(number + amount)
+                amount += number
+            data[country] = cumulative_death[:]
         return data
 
 
