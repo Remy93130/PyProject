@@ -69,7 +69,7 @@ def get_world_map(date):
         data_service = DataService(CSV_PATH)
         country_service = CountryInfoService()
         data_frame = data_service.prepare_data_for_map_visualisation(dates=[date])
-        if not data_frame:
+        if data_frame.empty:
             return jsonify(None)
         data_frame = country_service.complete_data_frame(data_frame)
         visualisation = VisualisationService(data_frame)
@@ -95,7 +95,7 @@ def get_charts():
     for country in countries:
         if country not in safe_countries:
             countries.remove(country)
-    if not countries:
+    if not countries or len(countries) > 5:
         return jsonify(None)
     filename = "".join(countries)
     path = pathlib.Path('resources/bars/{}_d.html'.format(filename))
