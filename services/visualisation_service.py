@@ -74,3 +74,23 @@ class VisualisationService:
             )
         )
         ply.plot(figure, auto_open=False, filename=path)
+
+    def draw_hist_char(self, title, x_legend, y_legend, path=""):
+        """ Use the data to build an histogram about death for
+        100,000 inhabitants
+        :param title: The chart's title
+        :param x_legend: The legend for the X axis
+        :param y_legend: The legend for the Y axis
+        :param path: The path to save the file
+        """
+        figure = go.Figure()
+        figure.add_trace(go.Histogram(
+            x=self.data["Deaths_per_100_000_population"],
+            xbins=dict(start=0, size=5)
+        ))
+        figure.update_layout(
+            title_text=title,
+            xaxis_title_text=x_legend,
+            yaxis_title_text=y_legend,
+        )
+        ply.plot(figure, auto_open=False, filename=path)

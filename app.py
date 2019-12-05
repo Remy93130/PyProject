@@ -25,6 +25,7 @@ def hello_world():
 
 
 @app.route('/country/<string:country>')
+@cross_origin()
 def get_country_info(country):
     """ Function to get the country API
     :param country: Country to get information
@@ -36,6 +37,7 @@ def get_country_info(country):
 
 
 @app.route('/region/<string:region>')
+@cross_origin()
 def get_region_info(region):
     """ Function to get the country API
     :param region: Region to get information
@@ -47,6 +49,7 @@ def get_region_info(region):
 
 
 @app.route('/data')
+@cross_origin()
 def get_data():
     """ Function to display data in the csv file
     :return: html tab of the data
@@ -58,9 +61,9 @@ def get_data():
 @app.route('/map/<int:date>')
 @cross_origin()
 def get_world_map(date):
-    """ Function to create a map to the given argument
-    Check if the map is not already created else created it
-    and return the path to see it
+    """ Function to create a map and a hist to the given argument
+    Check if the map is not already created else created both
+    map and hist and return the path to see it
     :param date: The date to visualise data
     :return: JSON data with the relative path
     """
@@ -78,11 +81,22 @@ def get_world_map(date):
             "Number of deaths per 100,000 inhabitants in {}".format(date),
             file
         )
-    response = dict(path=(request.host_url + str(path).replace("\\", "/")))
+        visualisation.draw_hist_char(
+            "Number of deaths per 100,000 inhabitants in {}".format(date),
+            "Deaths for 100,000 inhabitants",
+            "Number of countries",
+            "./resources/maps/hist_{}.html".format(date)
+        )
+    paths = dict(
+        map=(request.host_url + str(path).replace("\\", "/")),
+        hist=(request.host_url + str(path).replace("\\", "/").replace('map_', 'hist_'))
+    )
+    response = dict(paths=paths)
     return jsonify(response)
 
 
 @app.route('/charts')
+@cross_origin()
 def get_charts():
     """ Just a route to test the bar charts
     :return: JSON data with the relative path
@@ -143,6 +157,7 @@ def send_bar_file(path):
 
 
 @app.route('/countries')
+@cross_origin()
 def get_countries():
     """ Route to return countries whose we have
     data to display information about
