@@ -97,7 +97,6 @@ class DataService:
     def prepare_data_for_death_chart(self, countries):
         """ Create a dict with key countries selected
         and for value the list of death over years
-        :param cumulative: If the chart must be a cumulative chart
         :param countries: The list of countries to select
         :return: dict
         >>> service = DataService('../static/raw_data.csv')
@@ -130,7 +129,6 @@ class DataService:
         """ Convert data given in arguments into a cumulative data
         for display a bar chart with cumulative data
         :param data: The data to convert
-        :return: data converted
         """
         for country, death in data.items():
             cumulative_death = list()
@@ -139,7 +137,6 @@ class DataService:
                 cumulative_death.append(number + amount)
                 amount += number
             data[country] = cumulative_death[:]
-        return data
 
 
 if __name__ == '__main__':
