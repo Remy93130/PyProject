@@ -3,9 +3,12 @@ or a region with the restcountries api
 """
 
 import json
+import threading
+
 import requests
 
 API_URL = "https://restcountries.eu/rest/v2/"
+NUMBER_THREAD = 5
 
 
 class CountryInfoService:
@@ -36,7 +39,7 @@ class CountryInfoService:
         :param country: The country selected
         :return: dict or None if the response got 404
         """
-        url = self.api_url + "name/" + country + "?fullText=true"
+        url = "{}name/{}?fullText=true".format(self.api_url, country)
         data = self.__do_request(url)
         if 'status' in data and data['status'] == 404:
             return None
@@ -60,19 +63,52 @@ class CountryInfoService:
         :return: The new data frame with more data
         """
         cached_data = dict()
+        countries = list()
+        threads = list()
         rows_to_insert = {rows: [] for rows in ["Code", "Capital", "Population", "Size", "Gini"]}
         for row in data_frame.iterrows():
-            frame = row[1]
-            if frame.Country not in cached_data:
-                cached_data[frame.Country] = self.get_information_by_name(frame.Country)
-            rows_to_insert["Code"].append(cached_data[frame.Country]["alpha3Code"])
-            rows_to_insert["Capital"].append(cached_data[frame.Country]["capital"])
-            rows_to_insert["Population"].append(cached_data[frame.Country]["population"])
-            rows_to_insert["Size"].append(cached_data[frame.Country]["area"])
-            rows_to_insert["Gini"].append(cached_data[frame.Country]["gini"])
+            countries.append(row[1].Country)
+        split_len = int(len(countries) / NUMBER_THREAD)
+        for i in range(NUMBER_THREAD):
+            countries_to_find = countries[split_len * i: split_len * (i + 1)]
+            thread = threading.Thread(
+                target=self.__thread_information,
+                args=(countries_to_find, cached_data))
+            threads.append(thread)
+        threads.append(threading.Thread(
+            target=self.__thread_information,
+            args=(countries, cached_data)))
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        for country in countries:
+            self.__hydrate_data(rows_to_insert, cached_data, country)
         for column, value in rows_to_insert.items():
             data_frame.insert(len(data_frame.columns), column, value, True)
         return data_frame
+
+    @staticmethod
+    def __hydrate_data(rows, cached_data, country):
+        """ Add the data in the dict
+        :param rows: The dict to feed
+        :param cached_data: Data get by the API
+        :param country: Country selected
+        """
+        rows["Code"].append(cached_data[country]["alpha3Code"])
+        rows["Capital"].append(cached_data[country]["capital"])
+        rows["Population"].append(cached_data[country]["population"])
+        rows["Size"].append(cached_data[country]["area"])
+        rows["Gini"].append(cached_data[country]["gini"])
+
+    def __thread_information(self, countries, data):
+        """ Method used by thread to request the API
+        :param countries: Countries to fetch
+        :param data: dict to feed with the API
+        """
+        for country in countries:
+            if country not in data:
+                data[country] = self.get_information_by_name(country)
 
 
 if __name__ == '__main__':
