@@ -85,8 +85,9 @@ class VisualisationService:
         """
         figure = go.Figure()
         figure.add_trace(go.Histogram(
-            x=self.data["Deaths_per_100_000_population"],
-            xbins=dict(start=0, size=5)
+            x=self.data["Deaths_by_percent_of_population"],
+            histnorm='percent',
+            xbins=dict(start=0)
         ))
         figure.update_layout(
             title_text=title,

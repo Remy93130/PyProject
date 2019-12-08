@@ -86,7 +86,16 @@ class CountryInfoService:
             self.__hydrate_data(rows_to_insert, cached_data, country)
         for column, value in rows_to_insert.items():
             data_frame.insert(len(data_frame.columns), column, value, True)
+        self.__add_death_in_percent(data_frame)
         return data_frame
+
+    @staticmethod
+    def __add_death_in_percent(data_frame):
+        percent_data = list()
+        column_name = "Deaths_by_percent_of_population"
+        for row in data_frame.iterrows():
+            percent_data.append((int(row[1].Deaths) / int(row[1].Population) * 100))
+        data_frame.insert(len(data_frame.columns), column_name, percent_data, True)
 
     @staticmethod
     def __hydrate_data(rows, cached_data, country):
