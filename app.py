@@ -17,11 +17,16 @@ app = Flask(__name__, static_url_path="")
 CSV_PATH = "./static/raw_data.csv"
 
 
-@app.route('/')
-def hello_world():
-    """A beautiful hello world to test
-    the program because you can't bypass it"""
-    return jsonify({"message": "OK", "status": 200})
+@app.route('/countries')
+@cross_origin()
+def get_countries():
+    """ Route to return countries whose we have
+    data to display information about
+    :return: JSON data with all countries
+    """
+    data_service = DataService(CSV_PATH)
+    data = data_service.get_country_available()
+    return jsonify(list(data))
 
 
 @app.route('/country/<string:country>')
@@ -82,8 +87,8 @@ def get_world_map(date):
             file
         )
         visualisation.draw_hist_char(
-            "Number of deaths per 100,000 inhabitants in {}".format(date),
-            "Deaths for 100,000 inhabitants",
+            "Number of deaths as a percentage of the population in {}".format(date),
+            "Deaths in percent of population",
             "Number of countries",
             "./resources/maps/hist_{}.html".format(date)
         )
@@ -134,6 +139,7 @@ def get_charts():
         death=(request.host_url + str(path).replace("\\", "/")),
         cumulative=(request.host_url + str(path).replace("\\", "/").replace('_d', '_c'))
     )
+
     response = dict(paths=paths)
     return jsonify(response)
 
@@ -154,18 +160,6 @@ def send_bar_file(path):
     :return: The html file
     """
     return send_from_directory("resources/bars", path)
-
-
-@app.route('/countries')
-@cross_origin()
-def get_countries():
-    """ Route to return countries whose we have
-    data to display information about
-    :return: JSON data with all countries
-    """
-    data_service = DataService(CSV_PATH)
-    data = data_service.get_country_available()
-    return jsonify(list(data))
 
 
 if __name__ == '__main__':
