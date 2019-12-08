@@ -14,7 +14,7 @@ from services.visualisation_service import VisualisationService
 
 app = Flask(__name__, static_url_path="")
 
-CSV_PATH = "./static/raw_data.csv"
+CSV_PATH = "/static/raw_data.csv"
 
 
 @app.route('/countries')
