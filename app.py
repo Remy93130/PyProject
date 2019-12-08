@@ -14,7 +14,7 @@ from services.visualisation_service import VisualisationService
 
 app = Flask(__name__, static_url_path="")
 
-CSV_PATH = "/static/raw_data.csv"
+CSV_PATH = os.getcwd() + "/static/raw_data.csv"
 
 
 @app.route('/countries')
@@ -59,7 +59,7 @@ def get_data():
     """ Function to display data in the csv file
     :return: html tab of the data
     """
-    service = DataService(os.getcwd() + CSV_PATH)
+    service = DataService(CSV_PATH)
     return service.get_data_frame().to_html()
 
 
